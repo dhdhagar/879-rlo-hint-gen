@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-__version__ = 'dev'
+__version__ = '0.1'
 
 PROMPT_SYS = "You're a math education expert."
 PROMPT_INST_HINT = "Given a math question, the correct answer, and the incorrect answer provided by the student, generate a hint meeting the requirements in the rubric. The hint should be up to two sentences long."

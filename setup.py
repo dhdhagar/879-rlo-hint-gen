@@ -9,8 +9,4 @@ setup(
     author='Dhruv Agarwal',
     author_email='dhruv.agarwal17@gmail.com',
     py_modules=['interface'],
-    install_requires=[
-        'openai',
-    ]
 )
-# Path: interface.py
