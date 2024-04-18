@@ -1,5 +1,7 @@
 from openai import OpenAI
 
+__version__ = 'dev'
+
 PROMPT_SYS = "You're a math education expert."
 PROMPT_INST_HINT = "Given a math question, the correct answer, and the incorrect answer provided by the student, generate a hint meeting the requirements in the rubric. The hint should be up to two sentences long."
 PROMPT_HINT_RUBRIC = "1. The hint should not make any incorrect statements and should be relevant to the current question and student answer.\n2. The hint should not directly reveal the correct answer to the student.\n3. The hint provides suggestions to the student that, when followed, will guide them towards the correct answer.\n4. The hint correctly points out the error the student made or the misconception underlying their answer.\n5. The hint is positive and has an encouraging tone."
