@@ -25,8 +25,8 @@ question_bank = {
 
 
 class OpenAIInterface:
-    def __init__(self, api_key):
-        self.client = OpenAI(api_key)
+    def __init__(self):
+        self.client = OpenAI()
 
     def get_responses(self, prompts, model="gpt-3.5-turbo", **kwargs):
         if not isinstance(prompts, list):
