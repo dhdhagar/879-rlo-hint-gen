@@ -16,7 +16,7 @@ default_hyperparameters = {
     "request_timeout": 45
 }
 
-question_bank = {
+QUESTION_BANK = {
     "1": {
         "question": "What is 2 + 2?",
         "answer": "4",
@@ -25,8 +25,9 @@ question_bank = {
 
 
 class OpenAIInterface:
-    def __init__(self):
+    def __init__(self, question_bank=QUESTION_BANK):
         self.client = OpenAI()
+        self.question_bank = question_bank
 
     def get_responses(self, prompts, model="gpt-3.5-turbo", **kwargs):
         if not isinstance(prompts, list):
@@ -53,10 +54,10 @@ class OpenAIInterface:
         return results
 
     def get_question(self, question_id):
-        return question_bank[question_id]["question"]
+        return self.question_bank[question_id]["question"]
 
     def get_answer(self, question_id):
-        return question_bank[question_id]["answer"]
+        return self.question_bank[question_id]["answer"]
 
     def get_student_answer(self):
         return input(f"Enter your answer.")
@@ -65,20 +66,20 @@ class OpenAIInterface:
         return f"{PROMPT_INST_HINT}\n\n{PROMPT_HINT_RUBRIC}\n\nMath question: {question}\n\nCorrect answer: {correct_answer}\n\nStudent's answer {student_answer}\n\nHint: "
 
     def get_hint(self, question_id, student_answer, model="gpt-3.5-turbo", **kwargs):
-        prompt = self.create_hint_prompt(question_bank[question_id]["question"],
-                                         question_bank[question_id]["answer"],
+        prompt = self.create_hint_prompt(self.question_bank[question_id]["question"],
+                                         self.question_bank[question_id]["answer"],
                                          student_answer)
         return self.get_responses(prompt, model=model, **kwargs)[0]
 
     def check_answer(self, question_id, student_answer):
-        return student_answer == question_bank[question_id]["answer"]
+        return student_answer == self.question_bank[question_id]["answer"]
 
     def create_check_answer_prompt(self, question, correct_answer, student_answer):
         return f"{PROMPT_CHECK_ANSWER}\n\nMath question: {question}\n\nCorrect answer: {correct_answer}\n\nStudent's answer: {student_answer}\n\nIs the student's answer correct or incorrect? "
 
     def check_answer_gpt(self, question_id, student_answer, model="gpt-3.5-turbo", **kwargs):
-        prompt = self.create_check_answer_prompt(question_bank[question_id]["question"],
-                                                 question_bank[question_id]["answer"],
+        prompt = self.create_check_answer_prompt(self.question_bank[question_id]["question"],
+                                                 self.question_bank[question_id]["answer"],
                                                  student_answer)
         res = self.get_responses(prompt, model=model, **kwargs)[0]
         assert res in ["correct", "incorrect"]
