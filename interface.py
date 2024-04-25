@@ -1,4 +1,8 @@
 from openai import OpenAI
+import os
+import json
+import random, string
+
 
 __version__ = '0.1'
 
@@ -10,21 +14,26 @@ PROMPT_CHECK_ANSWER = "Given a math question, the correct answer, and a student'
 default_hyperparameters = {
     "temperature": 1,
     "max_tokens": 400,
-    "top_p": 1,
+    "top_p": 0.95,
 }
 
 QUESTION_BANK = {
     "1": {
-        "question": "What is 2 + 2?",
-        "answer": "4",
+        "question": "We deal from a well-shuffled 52-card deck. Calculate the probability that the 13th card is the first king to be dealt.",
+        "answer": "TODO",
+    },
+    "2": {
+        "question": "The king has only one sibling. What is the probability that the sibling is male? Assume that every birth results in a boy with probability 1/2, independent of other births.",
+        "answer": "0.5",
     },
 }
-
 
 class OpenAIInterface:
     def __init__(self, question_bank=QUESTION_BANK):
         self.client = OpenAI()
         self.question_bank = question_bank
+        self.id = None
+
 
     def get_responses(self, prompts, model="gpt-3.5-turbo", **kwargs):
         if not isinstance(prompts, list):
@@ -50,17 +59,54 @@ class OpenAIInterface:
             results.append(output)
         return results
 
+
+    def get_data(self):
+        data = {"student_id": self.get_student_id(),
+                "reasoning_1_pre_hint": self.student_reasoning_1_pre_hint,
+                "answer_1_pre_hint": self.student_answer_1_pre_hint,
+                "reasoning_1_post_hint": self.student_reasoning_1_post_hint,
+                "answer_1_post_hint": self.student_answer_1_post_hint,
+                "reasoning_2_pre_hint": self.student_reasoning_2_pre_hint,
+                "answer_2_pre_hint": self.student_answer_2_pre_hint,
+                "reasoning_2_post_hint": self.student_reasoning_2_post_hint,
+                "answer_2_post_hint": self.student_answer_2_post_hint,
+                }
+        
+        return data
+        
+
+    def save_data(self):
+        data = self.get_data()
+        with open(f"data_{self.get_student_id()}.json", "w") as f:
+            json.dump(data, f)
+
+
+    def get_student_id(self):
+        if( self.id == None):
+            self.id = ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+    
+        return self.id
+    
+
     def get_question(self, question_id):
         return self.question_bank[question_id]["question"]
+
 
     def get_answer(self, question_id):
         return self.question_bank[question_id]["answer"]
 
+
+    def get_student_reasoning_steps(self):
+        return input(f"Enter your reasoning steps (press enter when done):")
+    
+
     def get_student_answer(self):
-        return input(f"Enter your answer.")
+        return input(f"Enter your answer (press enter when done):")
+
 
     def create_hint_prompt(self, question, correct_answer, student_answer):
         return f"{PROMPT_INST_HINT}\n\n{PROMPT_HINT_RUBRIC}\n\nMath question: {question}\n\nCorrect answer: {correct_answer}\n\nStudent's answer {student_answer}\n\nHint: "
+
 
     def get_hint(self, question_id, student_answer, model="gpt-3.5-turbo", **kwargs):
         prompt = self.create_hint_prompt(self.question_bank[question_id]["question"],
@@ -68,12 +114,21 @@ class OpenAIInterface:
                                          student_answer)
         return self.get_responses(prompt, model=model, **kwargs)[0]
 
+
     def check_answer(self, question_id, student_answer):
         return student_answer == self.question_bank[question_id]["answer"]
+
 
     def create_check_answer_prompt(self, question, correct_answer, student_answer):
         return f"{PROMPT_CHECK_ANSWER}\n\nMath question: {question}\n\nCorrect answer: {correct_answer}\n\nStudent's answer: {student_answer}\n\nIs the student's answer correct or incorrect? "
 
+
+
+
+
+
+
+"""
     def check_answer_gpt(self, question_id, student_answer, model="gpt-3.5-turbo", **kwargs):
         prompt = self.create_check_answer_prompt(self.question_bank[question_id]["question"],
                                                  self.question_bank[question_id]["answer"],
@@ -81,3 +136,4 @@ class OpenAIInterface:
         res = self.get_responses(prompt, model=model, **kwargs)[0]
         assert res in ["correct", "incorrect"]
         return self.get_responses(prompt, model=model, **kwargs)[0] == "correct"
+"""
