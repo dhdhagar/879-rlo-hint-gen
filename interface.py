@@ -6,8 +6,9 @@ import random, string
 
 __version__ = '0.1'
 
+
 PROMPT_SYS = "You're a math education expert."
-PROMPT_INST_HINT = "Given a math question, the correct answer, and the incorrect answer provided by the student, generate a hint meeting the requirements in the rubric. The hint should be up to two sentences long."
+PROMPT_INST_HINT = "Given a math question, the correct answer, the reasoning steps provided by the student, and the incorrect answer provided by the student, generate a hint meeting the requirements in the rubric. The hint should be up to two sentences long."
 PROMPT_HINT_RUBRIC = "1. The hint should not make any incorrect statements and should be relevant to the current question and student answer.\n2. The hint should not directly reveal the correct answer to the student.\n3. The hint provides suggestions to the student that, when followed, will guide them towards the correct answer.\n4. The hint correctly points out the error the student made or the misconception underlying their answer.\n5. The hint is positive and has an encouraging tone."
 PROMPT_CHECK_ANSWER = "Given a math question, the correct answer, and a student's answer, determine if the student's answer is correct. Answer only with a 'correct' or 'incorrect'."
 
@@ -104,27 +105,29 @@ class OpenAIInterface:
         return input(f"Enter your answer (press enter when done):")
 
 
-    def create_hint_prompt(self, question, correct_answer, student_answer):
-        return f"{PROMPT_INST_HINT}\n\n{PROMPT_HINT_RUBRIC}\n\nMath question: {question}\n\nCorrect answer: {correct_answer}\n\nStudent's answer {student_answer}\n\nHint: "
+    def create_hint_prompt(self, question, correct_answer, student_reasoning_steps, student_answer):
+        return f"{PROMPT_INST_HINT}\n\n{PROMPT_HINT_RUBRIC}\n\nMath question: {question}\n\nCorrect answer: {correct_answer}\n\nStudent's reasoning steps: {student_reasoning_steps}\n\nStudent's answer: {student_answer}\n\nHint: "
 
 
-    def get_hint(self, question_id, student_answer, model="gpt-3.5-turbo", **kwargs):
+    def get_hint(self, question_id, student_reasoning_steps, student_answer, model="gpt-4", **kwargs):
         prompt = self.create_hint_prompt(self.question_bank[question_id]["question"],
-                                         self.question_bank[question_id]["answer"],
-                                         student_answer)
+                                        self.question_bank[question_id]["answer"],
+                                        student_reasoning_steps,
+                                        student_answer)
+
         return self.get_responses(prompt, model=model, **kwargs)[0]
 
 
     def check_answer(self, question_id, student_answer):
-        return student_answer == self.question_bank[question_id]["answer"]
+        return self._string_clean(student_answer) == self._string_clean(self.question_bank[question_id]["answer"])
 
 
     def create_check_answer_prompt(self, question, correct_answer, student_answer):
         return f"{PROMPT_CHECK_ANSWER}\n\nMath question: {question}\n\nCorrect answer: {correct_answer}\n\nStudent's answer: {student_answer}\n\nIs the student's answer correct or incorrect? "
 
 
-
-
+    def _string_clean(self, string):
+        return string.replace("\n", "").replace("\t", "")
 
 
 
