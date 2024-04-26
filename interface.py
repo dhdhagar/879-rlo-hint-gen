@@ -19,14 +19,26 @@ default_hyperparameters = {
 }
 
 QUESTION_BANK = {
+    # "1": {
+    #     "question": "We deal from a well-shuffled 52-card deck. Calculate the probability that the 13th card is the first king to be dealt.",
+    #     "answer": "TODO",
+    # },
+    # "2": {
+    #     "question": "The king has only one sibling. What is the probability that the sibling is male? Assume that every birth results in a boy with probability 1/2, independent of other births.",
+    #     "answer": "0.5",
+    # },
     "1": {
-        "question": "We deal from a well-shuffled 52-card deck. Calculate the probability that the 13th card is the first king to be dealt.",
-        "answer": "TODO",
+        "question": "You meet a father and son, whose family was selected at random from among all two-child families with at least one boy. Let p be the probability that the man's other child is also a boy. What is 6p? Assume that it is equally probable for a child to be boy or a girl.",
+        "answer": "2"
     },
     "2": {
-        "question": "The king has only one sibling. What is the probability that the sibling is male? Assume that every birth results in a boy with probability 1/2, independent of other births.",
-        "answer": "0.5",
+        "question": "Eight rooks are placed in distinct squares of an 8 × 8 chessboard, with all possible placements being equally likely. In how many ways can you place them such that all the rooks are safe from one another, i.e., that there is no row or column with more than one rook.",
+        "answer": "40320"
     },
+    "3": {
+        "question": "You toss independently a fair coin and you count the number of tosses until the first tail appears. If this number is n, you receive n dollars. What is the expected amount that you will receive?",
+        "answer": "2"
+    }
 }
 
 class OpenAIInterface:
