@@ -46,6 +46,14 @@ class OpenAIInterface:
         self.client = OpenAI()
         self.question_bank = question_bank
         self.id = None
+        self.student_reasoning_1_pre_hint = None
+        self.student_answer_1_pre_hint = None
+        self.student_reasoning_1_post_hint = None
+        self.student_answer_1_post_hint = None
+        self.student_reasoning_2_pre_hint = None
+        self.student_answer_2_pre_hint = None
+        self.student_reasoning_2_post_hint = None
+        self.student_answer_2_post_hint = None
 
 
     def get_responses(self, prompts, model="gpt-3.5-turbo", **kwargs):
